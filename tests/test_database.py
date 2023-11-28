@@ -64,7 +64,7 @@ expected_interactions: dict = {
 
 
 class TestDatabase:
-    def setup_method(self, method):
+    def setup_method(self,method):
         """Setup method to provide always a Database instance as self.db."""
         self.db = Database()
         self.db.set_path_to_data_file(path=PATH_TO_DATA)
