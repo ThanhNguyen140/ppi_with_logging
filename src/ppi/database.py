@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from sqlalchemy import create_engine
+import networkx as nw
 
 class Database:
     """Provides tools for working with protein interaction data and store the information in sql database"""
@@ -14,6 +15,7 @@ class Database:
         DB_PATH = os.path.join(PROJECT_FOLDER, "ppi.sqlite")
         self.conn = create_engine(f"sqlite:///{DB_PATH}")
         self.path = None
+        self._has_data = False
 
     def set_path_to_data_file(self,path):
         """Set path of database for later processing
@@ -126,7 +128,103 @@ class Database:
         table_sql = pd.read_sql_table(table,self.conn)
         return table_sql.columns.tolist()
 
+    def get_where(self,pmid=False,detection_method=False,interaction_type=False,confidence_value_gte=False,disallow_self_interaction=False):
+        where = ""
+        if pmid:
+            where += f" WHERE pmid = '{pmid}'"
+        if detection_method:
+            if len(where) == 0:
+                where += f" WHERE detection_method = '{detection_method}'"
+            else: 
+                where += f" AND detection_method = '{detection_method}'"
+        if interaction_type:
+            if len(where) == 0:
+                where += f" WHERE interaction_type = '{interaction_type}'"
+            else: 
+                where += f" AND interaction_type = '{interaction_type}'"
+        if confidence_value_gte:
+            if len(where) == 0:
+                where += f" WHERE confidence_value >= {confidence_value_gte}"
+            else: 
+                where += f" AND confidence_value >= {confidence_value_gte}"
+        if disallow_self_interaction:
+            if len(where) == 0:
+                where += " WHERE protein_a_id != protein_b_id"
+            else: 
+                where += " AND protein_a_id != protein_b_id"
+        return where
+    
+    def get_detection_method_statistics(self):
+        column = self.interaction.detection_method
+        ind = list(column.unique())
+        number = [column[column == x].count() for x in ind]
+        df = pd.DataFrame(data = number, index = ind, columns = ["number"])
+        df.index.name = "detection_method"
+        return df
+
+    def get_pmid_statistics(self):
+        column = self.interaction.pmid
+        ind = list(column.unique())
+        number = [column[column == x].count() for x in ind]
+        df = pd.DataFrame(data = number, index = ind, columns = ["number"])
+        df.index.name = "pmid"
+        return df
+    
+    def get_interaction_type_statistics(self):
+        column = self.interaction.interaction_type
+        ind = list(column.unique())
+        number = [column[column == x].count() for x in ind]
+        df = pd.DataFrame(data = number, index = ind, columns = ["number"])
+        df.index.name = "interaction_type"
+        return df
+
+    def get_confidence_value_statistics(self):
+        column = self.interaction.confidence_value
+        ind = list(column.unique())
+        number = [column[column == x].count() for x in ind]
+        df = pd.DataFrame(data = number, index = ind, columns = ["number"])
+        df.index.name = "confidence_value"
+        return df
         
+    def get_graph(self,pmid=False,detection_method=False,interaction_type=False,confidence_value_gte=False,disallow_self_interaction=False):
+        where = self.get_where(pmid,detection_method,interaction_type,confidence_value_gte,disallow_self_interaction)
+        query = f"Select * from interaction {where}"
+        df = pd.read_sql(query,self.conn)
+        protein = pd.read_sql_table("protein",self.conn)
+        graph = nw.MultiGraph()
+        nodes = list(set(df.protein_a_id.to_list()).union(set(df.protein_b_id.to_list())))
+        nodes_info = [{"accession":protein.accession[i-1],\
+                       "name":protein.name[i-1],\
+                        "taxid":protein.taxid[i-1]} for i in nodes]
+        edges = [(df["protein_a_id"][x],df["protein_b_id"][x],{"id": df.id[x],\
+                "confidence_value": df.confidence_value[x],\
+                "pmid": df.pmid[x],\
+                "interaction_type": df.interaction_type[x],\
+                "detection_method": df.detection_method[x]}) for x in range(len(df.protein_a_id))]
+        graph.add_nodes_from([(nodes[x],nodes_info[x]) for x in range(len(nodes))])
+        graph.add_edges_from(edges)
+        return graph
 
-
+    def drop_database(self):
+        HOME = os.path.expanduser("~")
+        PROJECT_FOLDER = os.path.join(HOME, ".ppi")
+        DB_PATH = os.path.join(PROJECT_FOLDER, "ppi.sqlite")
+        os.remove(DB_PATH)
+    
+    @property
+    def exists(self):
+        try:
+            pd.read_sql("protein",self.conn)
+            pd.read_sql("interaction",self.conn)
+            return True
+        except:
+            return False
+        
+    @property
+    def has_data(self):
+        if len(self.interaction) > 0:
+            self._has_data = True
+        else:
+            self._has_data = False
+        return self._has_data
 
