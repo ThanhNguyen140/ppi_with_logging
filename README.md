@@ -1,7 +1,10 @@
+
+# Home work week 7
 # **ppi**
 ## **Author:** Phuong Thanh Nguyen
 
 Table of content
+- [Home work week 7](#home-work-week-7)
 - [**ppi**](#ppi)
   - [**Author:** Phuong Thanh Nguyen](#author-phuong-thanh-nguyen)
     - [1. Summary](#1-summary)
@@ -9,12 +12,15 @@ Table of content
     - [3. Materials and methods](#3-materials-and-methods)
 
 ### 1. Summary
-This project aims at building package to work with protein interaction database
+This project aims at building package to work with protein interaction database and plotting graphs to perform interactions. 
 
 ### 2. Objective
-The package provides tools to read .tsv file and produce protein as well as interaction table in SQL database
+The package provides tools to read .tsv file and produce protein as well as interaction table in SQL database. Then a graph can be plotted based on interactions between protein databases. The module also allows filtering for certain interaction information. 
 
 ### 3. Materials and methods
- 1. src: contains [database.py](./src/ppi/database.py) file
- 2. tests: contains [test_database.py](./tests/test_database.py) file and test data in data folder
- 3. notebook: [week6.ipynb](./notebook/week6.ipynb) file to demonstrate the execution of the ppi package
+ 1. src: contains [database.py](./src/ppi/database.py) file and [intact_analyzer.py](./src/ppi/intact_analyzer.py)
+ 2. tests: contains [test_database.py](./tests/test_database.py) file and [test_inact_analyzer.py](./tests/test_inact_analyzer.py)
+ 3. notebook: 
+1. [test_ppi.ipynb](./notebooks/test_ppi.ipynb) file to demonstrate the execution of the ppi package on [test_ppi.tsv](./tests/data/test_ppi.tsv)
+2. [ppi.ipynb](./notebooks/ppi.ipynb) file to demonstrate the execution of the ppi package on [ppi.zip](./data/ppi.zip)
+  
