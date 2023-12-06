@@ -13,7 +13,7 @@ class Database:
         except FileExistsError:
             pass
         DB_PATH = os.path.join(PROJECT_FOLDER, "ppi.sqlite")
-        self.conn = create_engine(f"sqlite:///{DB_PATH}")
+        self.engine = create_engine(f"sqlite:///{DB_PATH}")
         self.path = None
         self._has_data = False
 
@@ -31,7 +31,7 @@ class Database:
         """
         if os.path.isfile(path):
             self.path = path
-            return self.path
+            return True
         else:
             raise FileNotFoundError
 
@@ -63,9 +63,10 @@ class Database:
         self.protein_df = self.protein_df.sort_values(by = "name")
         self.protein_df = self.protein_df.drop_duplicates(ignore_index=True)
         self.protein_df = self.protein_df.reset_index(drop=True)
+        self.protein_df = self.protein_df.rename(columns = {"uniprot_id":"accession"})
+        self.protein_df = self.protein_df.sort_values(by = "accession", ignore_index = True)
         self.protein_df.index += 1
         self.protein_df.index.name = "id"
-        self.protein_df = self.protein_df.rename(columns = {"uniprot_id":"accession"})
         return self.protein_df
     
     def get_interactions(self):
@@ -93,8 +94,8 @@ class Database:
         """
         self.get_proteins()
         self.get_interactions()
-        self.protein_df.to_sql("protein", self.conn, if_exists="replace")
-        self.interaction.to_sql("interaction", self.conn,if_exists = "replace")
+        self.protein_df.to_sql("protein", self.engine, if_exists="replace")
+        self.interaction.to_sql("interaction", self.engine,if_exists = "replace")
     
 
     def get_table_names(self):# -> list[Any]:
@@ -125,7 +126,7 @@ class Database:
         Returns:
             list: list of column names
         """
-        table_sql = pd.read_sql_table(table,self.conn)
+        table_sql = pd.read_sql_table(table,self.engine)
         return table_sql.columns.tolist()
 
     def get_where(self,pmid=False,detection_method=False,interaction_type=False,confidence_value_gte=False,disallow_self_interaction=False):
@@ -189,8 +190,8 @@ class Database:
     def get_graph(self,pmid=False,detection_method=False,interaction_type=False,confidence_value_gte=False,disallow_self_interaction=False):
         where = self.get_where(pmid,detection_method,interaction_type,confidence_value_gte,disallow_self_interaction)
         query = f"Select * from interaction {where}"
-        df = pd.read_sql(query,self.conn)
-        protein = pd.read_sql_table("protein",self.conn)
+        df = pd.read_sql(query,self.engine)
+        protein = pd.read_sql_table("protein",self.engine)
         graph = nw.MultiGraph()
         nodes = list(set(df.protein_a_id.to_list()).union(set(df.protein_b_id.to_list())))
         nodes_info = [{"accession":protein.accession[i-1],\
@@ -214,8 +215,8 @@ class Database:
     @property
     def exists(self):
         try:
-            pd.read_sql("protein",self.conn)
-            pd.read_sql("interaction",self.conn)
+            pd.read_sql("protein",self.engine)
+            pd.read_sql("interaction",self.engine)
             return True
         except:
             return False
