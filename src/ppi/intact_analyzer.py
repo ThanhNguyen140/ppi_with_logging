@@ -2,18 +2,17 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import logging
 
-
-logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        filename="basic.log",
-        filemode="w")
 class IntActAnalyzer:
+    """Work with network graph for database"""
     def __init__(self, graph: nx.MultiGraph):
+        """Initiate network graph
+
+        Args:
+            graph (nx.MultiGraph): input as graph of interaction
+        """
         self.graph: nx.MultiGraph = graph
 
-    def draw_graph(self, edge_label="id", node_label="id", figsize=(10, 5)):
+    def draw_graph(self, edge_label:str="id", node_label:str ="id", figsize: tuple =(10, 5)):
         """Shows the graph.
 
         Arguments `edge_label` and `node_label` allows to change the labels in the graph.
@@ -46,7 +45,7 @@ class IntActAnalyzer:
 
         plt.show()
 
-    def get_neighbors_name(self,name):
+    def get_neighbors_name(self,name:str)-> list:
         """Get neighbors' name of a node
 
         Args:
@@ -76,3 +75,9 @@ class IntActAnalyzer:
         data["bc_value"] = node[1]
         return data
 
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="basic.log",
+        filemode="w")

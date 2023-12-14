@@ -4,15 +4,8 @@ from sqlalchemy import create_engine
 import networkx as nw
 import logging
 
-logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        filename="basic.log",
-        )
-
 class Database:
-    """Provides tools for working with protein interaction data and store the information in sql database"""
+    """This class works with export data to generate database and filter database"""
     def __init__(self):
         HOME = os.path.expanduser("~")
         PROJECT_FOLDER = os.path.join(HOME, ".ppi")
@@ -26,7 +19,7 @@ class Database:
         self.path = None
         self._has_data = False
 
-    def set_path_to_data_file(self,path):
+    def set_path_to_data_file(self,path:str):
         """Set path of database for later processing
 
         Args:
@@ -100,8 +93,7 @@ class Database:
         return self.interaction
     
     def import_data(self):
-        """Generate SQL database for protein and interaction tables in a defined DB PATH
-        """
+        """Generate SQL database for protein and interaction tables in a defined DB PATH"""
         self.get_proteins()
         logging.info("Creating protein table")
         self.get_interactions()
@@ -129,7 +121,7 @@ class Database:
             pass
         return tables
 
-    def get_columns(self,table):
+    def get_columns(self,table:str):
         """Get column names from sql tabels
 
         Args:
@@ -262,16 +254,21 @@ class Database:
         graph.add_edges_from(edges)
         return graph
 
-    def drop_database(self):
-        """Delete the database directory"""
+    def drop_database(self) -> None:
+        """Delete the database directory
+        """
         HOME = os.path.expanduser("~")
         PROJECT_FOLDER = os.path.join(HOME, ".ppi")
         DB_PATH = os.path.join(PROJECT_FOLDER, "ppi.sqlite")
         os.remove(DB_PATH)
     
     @property
-    def exists(self):
-        """Check if the database exists"""
+    def exists(self) -> bool:
+        """Check if the database exists
+
+        Returns:
+            bool: True if database exists. Else, return False
+        """
         try:
             pd.read_sql("protein",self.engine)
             pd.read_sql("interaction",self.engine)
@@ -280,15 +277,33 @@ class Database:
             return False
         
     @property
-    def has_data(self):
-        """Check if interaction table has data"""
+    def has_data(self) -> bool:
+        """Check if interaction table has data
+
+        Returns:
+            bool: Returns True if interaction table has data. Otherwise, return False
+        """
         if len(self.interaction) > 0:
             self._has_data = True
         else:
             self._has_data = False
         return self._has_data
 
-    def count_nodes(self,graph) -> int:
-        """Get number of nodes from graph"""
+    def count_nodes(self,graph:nw.MultiGraph) -> int:
+        """Get number of nodes from graph
+
+        Args:
+            graph (nw.MultiGraph): Graph built by networkx.MultiGraph
+
+        Returns:
+            int: Number of nodes in graph
+        """
         logging.info(f"Creating graph with {len(graph.nodes)} nodes")
         return len(graph.nodes)
+    
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="basic.log",
+        )

@@ -12,7 +12,12 @@ def main():
     "--path",
     help="Path to the data.tsv",
 )
-def bcentrality(path):
+def bcentrality(path:str):
+    """Export information of node that has the highest betweenness centrality
+
+    Args:
+        path (str): Path to data.tsv
+    """
     db = Database()
     db.set_path_to_data_file(path)
     db.read_data()
@@ -29,7 +34,12 @@ def bcentrality(path):
     "--path",
     help="Path to the data.tsv",
 )   
-def number_of_nodes(path):
+def number_of_nodes(path:str):
+    """Export information of node that has the highest betweenness centrality
+
+    Args:
+        path (str): Path to data.tsv
+    """
     db = Database()
     db.set_path_to_data_file(path)
     db.read_data()
