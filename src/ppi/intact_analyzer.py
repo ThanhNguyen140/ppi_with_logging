@@ -1,6 +1,14 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import logging
 
+
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="basic.log",
+        filemode="w")
 class IntActAnalyzer:
     def __init__(self, graph: nx.MultiGraph):
         self.graph: nx.MultiGraph = graph
@@ -60,6 +68,7 @@ class IntActAnalyzer:
         Returns:
             dict : Dictionary of the protein information with the highest betweenness centrality
         """
+        logging.info("Getting protein with highest betweenness centrality")
         dct = nx.betweenness_centrality(self.graph)
         node = sorted(dct.items(), key = lambda x: x[1])[-1]
         data = self.graph.nodes[node[0]]

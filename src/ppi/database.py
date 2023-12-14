@@ -2,6 +2,15 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine
 import networkx as nw
+import logging
+
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="basic.log",
+        )
+
 class Database:
     """Provides tools for working with protein interaction data and store the information in sql database"""
     def __init__(self):
@@ -12,6 +21,7 @@ class Database:
         except FileExistsError:
             pass
         DB_PATH = os.path.join(PROJECT_FOLDER, "ppi.sqlite")
+        logging.info(f"Creating engine at {DB_PATH}")
         self.engine = create_engine(f"sqlite:///{DB_PATH}")
         self.path = None
         self._has_data = False
@@ -30,6 +40,7 @@ class Database:
         """
         if os.path.isfile(path):
             self.path = path
+            logging.info(f"Path to file: {path}")
             return True
         else:
             raise FileNotFoundError
@@ -92,10 +103,12 @@ class Database:
         """Generate SQL database for protein and interaction tables in a defined DB PATH
         """
         self.get_proteins()
+        logging.info("Creating protein table")
         self.get_interactions()
+        logging.info("Creating interaction table")
         self.protein_df.to_sql("protein", self.engine, if_exists="replace")
         self.interaction.to_sql("interaction", self.engine,if_exists = "replace")
-    
+
 
     def get_table_names(self):# -> list[Any]:
         """Get generated table names
@@ -277,4 +290,5 @@ class Database:
 
     def count_nodes(self,graph) -> int:
         """Get number of nodes from graph"""
+        logging.info(f"Creating graph with {len(graph.nodes)} nodes")
         return len(graph.nodes)

@@ -37,4 +37,3 @@ def number_of_nodes(path):
     g = db.get_graph()
     num = db.count_nodes(g)
     click.echo(f"Number of nodes:{num}")
-
