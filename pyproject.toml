@@ -24,5 +24,5 @@ dev = [
 ]
 
 [project.scripts]
-ppi = "ppi.click_functions:main"
+ppi = "ppi.cli:main"
 
