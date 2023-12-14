@@ -130,6 +130,18 @@ class Database:
         return table_sql.columns.tolist()
 
     def get_where(self,pmid=False,detection_method=False,interaction_type=False,confidence_value_gte=False,disallow_self_interaction=False):
+        """Generate where clause for SQL query
+
+        Args:
+            pmid (bool, optional): Filtering pmid values. Defaults to False.
+            detection_method (bool, optional): Filtering detection_method. Defaults to False.
+            interaction_type (bool, optional): Filtering interaction_type. Defaults to False.
+            confidence_value_gte (bool, optional): Filtering confidence_value. Defaults to False.
+            disallow_self_interaction (bool, optional): Filtering protein_a_id != protein_b_id. Defaults to False.
+
+        Returns:
+            str: where clause for SQL query
+        """
         where = ""
         if pmid:
             where += f" WHERE pmid = '{pmid}'"
@@ -156,6 +168,11 @@ class Database:
         return where
     
     def get_detection_method_statistics(self):
+        """Get detection_method statistics
+
+        Returns:
+            DataFrame: A DataFrame of detection_method and the statistics
+        """
         column = self.interaction.detection_method
         ind = list(column.unique())
         number = [column[column == x].count() for x in ind]
@@ -164,6 +181,11 @@ class Database:
         return df
 
     def get_pmid_statistics(self):
+        """Get pmid statistics
+
+        Returns:
+            DataFrame: A DataFrame of pmid and the statistics
+        """
         column = self.interaction.pmid
         ind = list(column.unique())
         number = [column[column == x].count() for x in ind]
@@ -172,6 +194,11 @@ class Database:
         return df
     
     def get_interaction_type_statistics(self):
+        """Get interaction_type statistics
+
+        Returns:
+            DataFrame: A DataFrame of interaction_type and the statistics
+        """
         column = self.interaction.interaction_type
         ind = list(column.unique())
         number = [column[column == x].count() for x in ind]
@@ -180,6 +207,11 @@ class Database:
         return df
 
     def get_confidence_value_statistics(self):
+        """Get confidence_value statistics
+
+        Returns:
+            DataFrame: A DataFrame of confidence_value and the statistics
+        """
         column = self.interaction.confidence_value
         ind = list(column.unique())
         number = [column[column == x].count() for x in ind]
@@ -188,6 +220,18 @@ class Database:
         return df
         
     def get_graph(self,pmid=False,detection_method=False,interaction_type=False,confidence_value_gte=False,disallow_self_interaction=False):
+        """Generate graphs of protein interactions
+
+        Args:
+            pmid (bool, optional): Filtering of pmid value. Defaults to False.
+            detection_method (bool, optional): Filtering of detection_method. Defaults to False.
+            interaction_type (bool, optional): Filtering of interaction_type. Defaults to False.
+            confidence_value_gte (bool, optional): Filtering of confidence_value. Defaults to False.
+            disallow_self_interaction (bool, optional): Filtering of protein_a_id != protein_b_id. Defaults to False.
+
+        Returns:
+            _type_: _description_
+        """
         where = self.get_where(pmid,detection_method,interaction_type,confidence_value_gte,disallow_self_interaction)
         query = f"Select * from interaction {where}"
         df = pd.read_sql(query,self.engine)
@@ -207,6 +251,7 @@ class Database:
         return graph
 
     def drop_database(self):
+        """Delete the database directory"""
         HOME = os.path.expanduser("~")
         PROJECT_FOLDER = os.path.join(HOME, ".ppi")
         DB_PATH = os.path.join(PROJECT_FOLDER, "ppi.sqlite")
@@ -214,6 +259,7 @@ class Database:
     
     @property
     def exists(self):
+        """Check if the database exists"""
         try:
             pd.read_sql("protein",self.engine)
             pd.read_sql("interaction",self.engine)
@@ -223,6 +269,7 @@ class Database:
         
     @property
     def has_data(self):
+        """Check if interaction table has data"""
         if len(self.interaction) > 0:
             self._has_data = True
         else:

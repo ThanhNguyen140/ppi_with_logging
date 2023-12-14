@@ -40,6 +40,14 @@ class IntActAnalyzer:
         plt.show()
 
     def get_neighbors_name(self,name):
+        """Get neighbors' name of a node
+
+        Args:
+            name (str): Name of protein in the node
+
+        Returns:
+            list: list of neighbor names
+        """
         nodes = dict(self.graph.nodes(data=True))
         for node,data in nodes.items():
             if data["name"] == name:
@@ -48,6 +56,11 @@ class IntActAnalyzer:
         return name_neighbors
     
     def get_protein_with_highest_bc(self):
+        """Check protein with highest betweenness centrality
+
+        Returns:
+            dict : Dictionary of the protein information with the highest betweenness centrality
+        """
         dct = nx.betweenness_centrality(self.graph)
         node = sorted(dct.items(), key = lambda x: x[1])[-1]
         data = self.graph.nodes[node[0]]
