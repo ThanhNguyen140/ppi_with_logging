@@ -2,7 +2,6 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine
 import networkx as nw
-
 class Database:
     """Provides tools for working with protein interaction data and store the information in sql database"""
     def __init__(self):
@@ -276,3 +275,6 @@ class Database:
             self._has_data = False
         return self._has_data
 
+    def count_nodes(self,graph) -> int:
+        """Get number of nodes from graph"""
+        return len(graph.nodes)

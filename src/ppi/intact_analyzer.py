@@ -1,7 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-
 class IntActAnalyzer:
     def __init__(self, graph: nx.MultiGraph):
         self.graph: nx.MultiGraph = graph

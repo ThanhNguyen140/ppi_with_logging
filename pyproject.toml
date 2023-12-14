@@ -8,6 +8,7 @@ authors = [
 dependencies = [
     "pandas>=2.1.3",
     "sqlalchemy>=2.0.23",
+    "click>=8.1.7",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
@@ -21,3 +22,7 @@ build-backend = "pdm.backend"
 dev = [
     "pytest>=7.4.3",
 ]
+
+[project.scripts]
+ppi = "ppi.click_functions:main"
+
