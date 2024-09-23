@@ -14,3 +14,13 @@
 2023-12-14 16:26:30 INFO Creating protein table
 2023-12-14 16:26:31 INFO Creating interaction table
 2023-12-14 16:26:32 INFO Getting protein with highest betweenness centrality
+2023-12-15 11:30:13 INFO Creating engine at /Users/Thanh/.ppi/ppi.sqlite
+2023-12-15 11:30:13 INFO Path to file: /Users/Thanh/master/programming_lab2/packages/ppi/tests/data/test_ppi.tsv
+2023-12-15 11:30:13 INFO Creating protein table
+2023-12-15 11:30:13 INFO Creating interaction table
+2023-12-15 11:30:13 INFO Getting protein with highest betweenness centrality
+2023-12-15 11:30:57 INFO Creating engine at /Users/Thanh/.ppi/ppi.sqlite
+2023-12-15 11:30:57 INFO Path to file: /Users/Thanh/master/programming_lab2/packages/ppi/tests/data/test_ppi.tsv
+2023-12-15 11:30:57 INFO Creating protein table
+2023-12-15 11:30:57 INFO Creating interaction table
+2023-12-15 11:30:57 INFO Creating graph with 7 nodes
